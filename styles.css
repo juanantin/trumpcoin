@@ -23,23 +23,18 @@ body {
 }
 
 /* Hero */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 .hero-banner {
   display: block;
   width: 100%;
   height: auto;
   border-radius: 12px;
+}
+
+.site-name {
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  margin: 24px 0 0;
 }
 
 .accent {
