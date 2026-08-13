@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRMP — Trump Rewards My Portfolio</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%2379d70f%22/><text x=%2250%22 y=%2268%22 font-size=%2260%22 font-family=%22Georgia,serif%22 font-weight=%22bold%22 text-anchor=%22middle%22 fill=%22black%22>T</text></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <div class="hero-text">
+      <h1 class="logo">TRMP</h1>
+      <div class="underline"></div>
+      <h2 class="tagline">Trump Rewards My Portfolio</h2>
+      <p class="subtagline">TRMP Earn <span class="accent">$DJT</span> stock.</p>
+    </div>
+    <div class="hero-avatar" aria-hidden="true">
+      <svg viewBox="0 0 300 320" xmlns="http://www.w3.org/2000/svg">
+        <!-- suit -->
+        <path d="M40 320 L60 230 L120 210 L150 240 L180 210 L240 230 L260 320 Z" fill="#2b2b2b"/>
+        <!-- shirt -->
+        <path d="M120 210 L150 320 L180 210 L150 240 Z" fill="#ffffff"/>
+        <!-- tie -->
+        <path d="M140 215 L160 215 L168 260 L150 300 L132 260 Z" fill="#c1272d"/>
+        <!-- neck -->
+        <rect x="128" y="170" width="44" height="50" fill="#f3b98c"/>
+        <!-- head -->
+        <ellipse cx="150" cy="130" rx="78" ry="90" fill="#f3b98c"/>
+        <!-- ears -->
+        <ellipse cx="72" cy="135" rx="12" ry="18" fill="#f3b98c"/>
+        <ellipse cx="228" cy="135" rx="12" ry="18" fill="#f3b98c"/>
+        <!-- eyebrows -->
+        <path d="M100 108 Q120 96 145 106" stroke="#e8b23d" stroke-width="10" fill="none" stroke-linecap="round"/>
+        <path d="M200 108 Q180 96 155 106" stroke="#e8b23d" stroke-width="10" fill="none" stroke-linecap="round"/>
+        <!-- eyes -->
+        <ellipse cx="120" cy="122" rx="9" ry="7" fill="#ffffff"/>
+        <ellipse cx="180" cy="122" rx="9" ry="7" fill="#ffffff"/>
+        <circle cx="121" cy="123" r="3.5" fill="#3b2a1a"/>
+        <circle cx="181" cy="123" r="3.5" fill="#3b2a1a"/>
+        <!-- squint lines under eyes -->
+        <path d="M108 132 Q120 138 133 132" stroke="#d99a6c" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M167 132 Q180 138 192 132" stroke="#d99a6c" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <!-- nose -->
+        <path d="M148 120 Q142 150 132 162 Q150 172 168 162 Q158 150 152 120" fill="#e8a877" opacity="0.7"/>
+        <!-- mouth -->
+        <path d="M118 182 Q150 205 182 182 Q150 198 118 182 Z" fill="#7a2e2e"/>
+        <path d="M126 182 Q150 190 174 182" stroke="#ffffff" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <!-- chin shadow -->
+        <path d="M110 195 Q150 220 190 195 Q170 208 150 210 Q130 208 110 195" fill="#e0a679" opacity="0.5"/>
+        <!-- hair -->
+        <path d="M60 110 Q55 40 150 30 Q245 40 240 110 Q220 70 190 85 Q200 55 165 55 Q175 40 150 42 Q125 40 135 55 Q100 55 110 85 Q80 70 60 110 Z" fill="#f0c419"/>
+        <path d="M55 100 Q70 60 100 55 Q75 75 70 105 Z" fill="#f7d84a"/>
+        <path d="M245 100 Q230 60 200 55 Q225 75 230 105 Z" fill="#f7d84a"/>
+      </svg>
+    </div>
+  </header>
+
+  <section class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v5c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 11v5c0 1.7 3.6 3 8 3s8-1.3 8-3v-5"/></svg>
+      </div>
+      <div class="stat-label">FEES COLLECTED</div>
+      <div class="stat-value" id="feesCollected">$1,234,567.89</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24"><polyline points="3,17 9,11 13,15 21,6"/><polyline points="15,6 21,6 21,12"/></svg>
+      </div>
+      <div class="stat-label">$DJT DISTRIBUTED</div>
+      <div class="stat-value" id="djtDistributed">12,345.67</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21,3 21,9 15,9"/></svg>
+      </div>
+      <div class="stat-label">ROUNDS</div>
+      <div class="stat-value" id="rounds">24</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+      </div>
+      <div class="stat-label">HOLDER COUNT</div>
+      <div class="stat-value" id="holderCount">5,678</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24"><rect x="4" y="12" width="4" height="8"/><rect x="10" y="7" width="4" height="13"/><rect x="16" y="3" width="4" height="17"/></svg>
+      </div>
+      <div class="stat-label">MARKET CAP</div>
+      <div class="stat-value" id="marketCap">$4,567,890</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24"><polyline points="2,12 7,12 9,6 13,18 16,12 22,12"/></svg>
+      </div>
+      <div class="stat-label">VOLUME 24H</div>
+      <div class="stat-value" id="volume24h">$987,654</div>
+    </div>
+  </section>
+
+  <section class="actions">
+    <a href="#" class="btn btn-primary" id="buyBtn">
+      <svg viewBox="0 0 24 24" class="btn-icon"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7Z"/></svg>
+      BUY $TRUMP
+    </a>
+    <a href="https://x.com/" target="_blank" rel="noopener" class="btn btn-secondary">
+      <svg viewBox="0 0 24 24" class="btn-icon"><path d="M4 4l16 16M20 4 4 20"/></svg>
+      X (TWITTER)
+    </a>
+    <a href="#" class="btn btn-secondary" id="chartBtn">
+      <svg viewBox="0 0 24 24" class="btn-icon"><rect x="4" y="12" width="3" height="8"/><rect x="10" y="7" width="3" height="13"/><rect x="16" y="3" width="3" height="17"/></svg>
+      VIEW CHART
+    </a>
+    <button class="btn btn-secondary" id="copyCaBtn" type="button">
+      <svg viewBox="0 0 24 24" class="btn-icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14,2 14,8 20,8"/></svg>
+      <span id="copyCaLabel">COPY CA</span>
+    </button>
+  </section>
+
+  <footer class="footer">
+    <p class="footer-tagline">TRMP Earn <span class="accent">$DJT</span> stock.</p>
+    <p class="disclaimer">Trump Rewards My Portfolio is a meme token. Not affiliated with Donald Trump or any entity.<br>Not financial advice. DYOR.</p>
+  </footer>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
