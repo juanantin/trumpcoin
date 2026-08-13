@@ -23,61 +23,27 @@ body {
 }
 
 /* Hero */
-.hero {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  flex-wrap: wrap;
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.hero-text {
-  flex: 1;
-  min-width: 260px;
-}
-
-.logo {
-  font-size: 72px;
-  font-weight: 900;
-  letter-spacing: 10px;
-  margin: 0;
-  line-height: 1;
-}
-
-.underline {
-  width: 60%;
-  max-width: 420px;
-  height: 6px;
-  background: var(--green);
-  margin: 16px 0 24px;
-  border-radius: 3px;
-}
-
-.tagline {
-  font-size: 32px;
-  font-weight: 700;
-  margin: 0 0 12px;
-}
-
-.subtagline {
-  font-size: 22px;
-  font-weight: 700;
-  margin: 0;
+.hero-banner {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
 }
 
 .accent {
   color: var(--green-dark);
-}
-
-.hero-avatar {
-  width: 220px;
-  flex-shrink: 0;
-}
-
-.hero-avatar svg {
-  width: 100%;
-  height: auto;
-  display: block;
 }
 
 /* Stats grid */
