@@ -1,4 +1,4 @@
-const CONTRACT_ADDRESS = "REPLACE_WITH_CONTRACT_ADDRESS";
+const CONTRACT_ADDRESS = "0xfa94473b453baf93df2db8ab8101b9da518a10c0";
 
 document.getElementById("copyCaBtn").addEventListener("click", async () => {
   const label = document.getElementById("copyCaLabel");
