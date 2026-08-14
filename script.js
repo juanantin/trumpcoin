@@ -8,9 +8,14 @@ const EXPLORER_TOKEN_API = `https://robinhoodchain.blockscout.com/api/v2/tokens/
 const REFRESH_MS = 30000;
 const RETRY_DELAY_MS = 5000;
 // Public read-only APIs above don't all send CORS headers for cross-origin
-// browser requests. If a direct fetch is blocked, retry once through a
-// CORS-relay so the dashboard still loads live data instead of freezing.
-const CORS_PROXY = "https://corsproxy.io/?url=";
+// browser requests. If a direct fetch is blocked, retry through CORS
+// relays (in order) so the dashboard still loads live data instead of
+// freezing. Multiple relays are tried because free ones are flaky/rate
+// limited individually.
+const CORS_PROXIES = [
+  (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  (url) => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+];
 
 document.getElementById("copyCaBtn").addEventListener("click", async () => {
   const label = document.getElementById("copyCaLabel");
@@ -35,11 +40,21 @@ async function fetchJson(url) {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
   } catch (directErr) {
-    console.warn(`Direct fetch failed for ${url}, retrying via CORS proxy:`, directErr);
-    const res = await fetch(`${CORS_PROXY}${encodeURIComponent(url)}`, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Proxy HTTP ${res.status}`);
-    return await res.json();
+    console.warn(`Direct fetch failed for ${url}, trying CORS proxies:`, directErr);
   }
+
+  let lastErr;
+  for (const buildProxyUrl of CORS_PROXIES) {
+    try {
+      const res = await fetch(buildProxyUrl(url), { cache: "no-store" });
+      if (!res.ok) throw new Error(`Proxy HTTP ${res.status}`);
+      return await res.json();
+    } catch (proxyErr) {
+      console.warn(`CORS proxy failed for ${url}:`, proxyErr);
+      lastErr = proxyErr;
+    }
+  }
+  throw lastErr;
 }
 
 async function refreshDashboard(isRetry = false) {
