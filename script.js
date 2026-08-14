@@ -7,6 +7,7 @@ const DEXSCREENER_API = `https://api.dexscreener.com/latest/dex/pairs/${DEX_CHAI
 const EXPLORER_TOKEN_API = `https://robinhoodchain.blockscout.com/api/v2/tokens/${CONTRACT_ADDRESS}`;
 const REFRESH_MS = 30000;
 const RETRY_DELAY_MS = 5000;
+const FETCH_TIMEOUT_MS = 6000;
 // Public read-only APIs above don't all send CORS headers for cross-origin
 // browser requests. If a direct fetch is blocked, retry through CORS
 // relays (in order) so the dashboard still loads live data instead of
@@ -34,11 +35,21 @@ function setStat(id, text) {
   el.classList.remove("loading");
 }
 
-async function fetchJson(url) {
+async function fetchWithTimeout(url, timeoutMs) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(url, { cache: "no-store" });
+    const res = await fetch(url, { cache: "no-store", signal: controller.signal });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function fetchJson(url) {
+  try {
+    return await fetchWithTimeout(url, FETCH_TIMEOUT_MS);
   } catch (directErr) {
     console.warn(`Direct fetch failed for ${url}, trying CORS proxies:`, directErr);
   }
@@ -46,9 +57,7 @@ async function fetchJson(url) {
   let lastErr;
   for (const buildProxyUrl of CORS_PROXIES) {
     try {
-      const res = await fetch(buildProxyUrl(url), { cache: "no-store" });
-      if (!res.ok) throw new Error(`Proxy HTTP ${res.status}`);
-      return await res.json();
+      return await fetchWithTimeout(buildProxyUrl(url), FETCH_TIMEOUT_MS);
     } catch (proxyErr) {
       console.warn(`CORS proxy failed for ${url}:`, proxyErr);
       lastErr = proxyErr;
