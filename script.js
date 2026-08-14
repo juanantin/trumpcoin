@@ -61,7 +61,7 @@ async function refreshDashboard(isRetry = false) {
   try {
     const data = await fetchJson(TREASURY_API);
 
-    setStat("feesCollected", `$${data.feesUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+    setStat("feesCollected", `$${data.distributedUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
     setStat("rounds", data.rounds.toLocaleString());
     setStat("holderCount", data.holdersPaid.toLocaleString());
 
