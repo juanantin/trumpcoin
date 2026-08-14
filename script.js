@@ -7,6 +7,10 @@ const DEXSCREENER_API = `https://api.dexscreener.com/latest/dex/pairs/${DEX_CHAI
 const EXPLORER_TOKEN_API = `https://robinhoodchain.blockscout.com/api/v2/tokens/${CONTRACT_ADDRESS}`;
 const REFRESH_MS = 30000;
 const RETRY_DELAY_MS = 5000;
+// Public read-only APIs above don't all send CORS headers for cross-origin
+// browser requests. If a direct fetch is blocked, retry once through a
+// CORS-relay so the dashboard still loads live data instead of freezing.
+const CORS_PROXY = "https://corsproxy.io/?url=";
 
 document.getElementById("copyCaBtn").addEventListener("click", async () => {
   const label = document.getElementById("copyCaLabel");
@@ -25,11 +29,22 @@ function setStat(id, text) {
   el.classList.remove("loading");
 }
 
+async function fetchJson(url) {
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (directErr) {
+    console.warn(`Direct fetch failed for ${url}, retrying via CORS proxy:`, directErr);
+    const res = await fetch(`${CORS_PROXY}${encodeURIComponent(url)}`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Proxy HTTP ${res.status}`);
+    return await res.json();
+  }
+}
+
 async function refreshDashboard(isRetry = false) {
   try {
-    const res = await fetch(TREASURY_API, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const data = await fetchJson(TREASURY_API);
 
     setStat("feesCollected", `$${data.feesUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
     setStat("rounds", data.rounds.toLocaleString());
@@ -52,9 +67,7 @@ function formatUsd(amount) {
 
 async function refreshMarketDataFromExplorer() {
   try {
-    const res = await fetch(EXPLORER_TOKEN_API, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const data = await fetchJson(EXPLORER_TOKEN_API);
 
     const decimals = Number(data.decimals ?? 18);
     const totalSupply = Number(data.total_supply) / 10 ** decimals;
@@ -70,9 +83,7 @@ async function refreshMarketDataFromExplorer() {
 
 async function refreshMarketData(isRetry = false) {
   try {
-    const res = await fetch(DEXSCREENER_API, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const data = await fetchJson(DEXSCREENER_API);
     const pair = data.pairs && data.pairs[0];
     if (!pair) throw new Error("No pair data returned");
 
