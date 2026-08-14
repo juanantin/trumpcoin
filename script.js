@@ -6,13 +6,12 @@ const DEX_PAIR_ADDRESS = "0xa1766f6cdf47f96d912b77cd08f077f65b53decfe71c670de60c
 const DEXSCREENER_API = `https://api.dexscreener.com/latest/dex/pairs/${DEX_CHAIN_ID}/${DEX_PAIR_ADDRESS}`;
 const EXPLORER_TOKEN_API = `https://robinhoodchain.blockscout.com/api/v2/tokens/${CONTRACT_ADDRESS}`;
 const REFRESH_MS = 30000;
-const RETRY_DELAY_MS = 5000;
-const FETCH_TIMEOUT_MS = 6000;
+const RETRY_DELAY_MS = 3000;
+const FETCH_TIMEOUT_MS = 5000;
 // Public read-only APIs above don't all send CORS headers for cross-origin
-// browser requests. If a direct fetch is blocked, retry through CORS
-// relays (in order) so the dashboard still loads live data instead of
-// freezing. Multiple relays are tried because free ones are flaky/rate
-// limited individually.
+// browser requests. Raced in parallel against the direct request in
+// fetchJson() so the dashboard still loads live data instead of freezing,
+// without waiting on each relay one at a time.
 const CORS_PROXIES = [
   (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
   (url) => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
@@ -48,22 +47,17 @@ async function fetchWithTimeout(url, timeoutMs) {
 }
 
 async function fetchJson(url) {
+  // Race the direct request against every CORS proxy at once instead of
+  // trying them one at a time -- whichever responds first wins, so total
+  // latency is bounded by the fastest working source instead of the sum
+  // of every attempt's timeout.
+  const candidates = [url, ...CORS_PROXIES.map((build) => build(url))];
   try {
-    return await fetchWithTimeout(url, FETCH_TIMEOUT_MS);
-  } catch (directErr) {
-    console.warn(`Direct fetch failed for ${url}, trying CORS proxies:`, directErr);
+    return await Promise.any(candidates.map((candidate) => fetchWithTimeout(candidate, FETCH_TIMEOUT_MS)));
+  } catch (aggregateErr) {
+    console.warn(`All sources failed for ${url}:`, aggregateErr.errors ?? aggregateErr);
+    throw aggregateErr;
   }
-
-  let lastErr;
-  for (const buildProxyUrl of CORS_PROXIES) {
-    try {
-      return await fetchWithTimeout(buildProxyUrl(url), FETCH_TIMEOUT_MS);
-    } catch (proxyErr) {
-      console.warn(`CORS proxy failed for ${url}:`, proxyErr);
-      lastErr = proxyErr;
-    }
-  }
-  throw lastErr;
 }
 
 async function refreshDashboard(isRetry = false) {
