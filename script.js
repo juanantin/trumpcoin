@@ -5,7 +5,8 @@ const DEX_CHAIN_ID = "robinhood";
 const DEX_PAIR_ADDRESS = "0xa1766f6cdf47f96d912b77cd08f077f65b53decfe71c670de60c5d812049c71c";
 const DEXSCREENER_API = `https://api.dexscreener.com/latest/dex/pairs/${DEX_CHAIN_ID}/${DEX_PAIR_ADDRESS}`;
 const EXPLORER_TOKEN_API = `https://robinhoodchain.blockscout.com/api/v2/tokens/${CONTRACT_ADDRESS}`;
-const REFRESH_MS = 60000;
+const REFRESH_MS = 30000;
+const RETRY_DELAY_MS = 5000;
 
 document.getElementById("copyCaBtn").addEventListener("click", async () => {
   const label = document.getElementById("copyCaLabel");
@@ -24,9 +25,9 @@ function setStat(id, text) {
   el.classList.remove("loading");
 }
 
-async function refreshDashboard() {
+async function refreshDashboard(isRetry = false) {
   try {
-    const res = await fetch(TREASURY_API);
+    const res = await fetch(TREASURY_API, { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
@@ -38,8 +39,10 @@ async function refreshDashboard() {
     if (djt) {
       setStat("djtDistributed", djt.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     }
+    console.info("Treasury stats updated", data);
   } catch (err) {
     console.error("Failed to load treasury stats:", err);
+    if (!isRetry) setTimeout(() => refreshDashboard(true), RETRY_DELAY_MS);
   }
 }
 
@@ -49,7 +52,7 @@ function formatUsd(amount) {
 
 async function refreshMarketDataFromExplorer() {
   try {
-    const res = await fetch(EXPLORER_TOKEN_API);
+    const res = await fetch(EXPLORER_TOKEN_API, { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
@@ -58,15 +61,16 @@ async function refreshMarketDataFromExplorer() {
     const priceUsd = data.exchange_rate != null ? Number(data.exchange_rate) : null;
     if (priceUsd != null && Number.isFinite(totalSupply)) {
       setStat("marketCap", formatUsd(totalSupply * priceUsd));
+      console.info("Market cap updated from explorer fallback", { totalSupply, priceUsd });
     }
   } catch (err) {
     console.error("Explorer market data fetch failed:", err);
   }
 }
 
-async function refreshMarketData() {
+async function refreshMarketData(isRetry = false) {
   try {
-    const res = await fetch(DEXSCREENER_API);
+    const res = await fetch(DEXSCREENER_API, { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     const pair = data.pairs && data.pairs[0];
@@ -77,9 +81,11 @@ async function refreshMarketData() {
     if (marketCap != null) setStat("marketCap", formatUsd(marketCap));
     if (volume24h != null) setStat("volume24h", formatUsd(volume24h));
     if (marketCap == null) await refreshMarketDataFromExplorer();
+    console.info("Market data updated", pair);
   } catch (err) {
     console.error("Dexscreener fetch failed, falling back to on-chain data:", err);
     await refreshMarketDataFromExplorer();
+    if (!isRetry) setTimeout(() => refreshMarketData(true), RETRY_DELAY_MS);
   }
 }
 
