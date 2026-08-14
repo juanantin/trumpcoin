@@ -68,6 +68,7 @@ async function refreshDashboard(isRetry = false) {
     const djt = (data.distributed || []).find((d) => d.symbol === "DJT");
     if (djt) {
       setStat("djtDistributed", djt.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+      setStat("djtDistributedUsd", `$${djt.usd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
     }
     console.info("Treasury stats updated", data);
   } catch (err) {

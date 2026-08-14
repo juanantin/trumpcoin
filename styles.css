@@ -91,7 +91,15 @@ body {
   font-weight: 700;
 }
 
-.stat-value.loading {
+.stat-subvalue {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray);
+  margin-top: 4px;
+}
+
+.stat-value.loading,
+.stat-subvalue.loading {
   animation: blink 1.4s ease-in-out infinite;
 }
 
@@ -101,7 +109,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .stat-value.loading {
+  .stat-value.loading,
+  .stat-subvalue.loading {
     animation: none;
     opacity: 0.55;
   }
